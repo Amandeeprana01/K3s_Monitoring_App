@@ -9,7 +9,7 @@ data:
       smtp_smarthost: 'smtp.gmail.com:587'
       smtp_from: 'ranaaamandeep682@gmail.com'
       smtp_auth_username: 'ranaaamandeep682@gmail.com'
-      smtp_auth_password: 'wqbz bkaw iuwe uhhk'
+      smtp_auth_password: ''
 
     route:
       receiver: "email-notification"
