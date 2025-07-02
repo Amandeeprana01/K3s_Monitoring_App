@@ -1,0 +1,30 @@
+groups:
+  - name: python-app-rules
+    rules:
+      - alert: PythonAppDown
+        expr: up{job="python-app"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Python app is down"
+          description: "The Python app job has been unreachable for more than 1 minute."
+
+      - alert: HighCPUUsage
+        expr: python_app_cpu_percent > 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 10% for more than 1 minute."
+
+      - alert: HighMemoryUsage
+        expr: python_app_memory_percent > 70
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 70% for more than 1 minute."
+
