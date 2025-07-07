@@ -58,3 +58,4 @@ Python_proj/
 - Docker & K3s installed
 - kubectl configured
 
+# Test pipeline
