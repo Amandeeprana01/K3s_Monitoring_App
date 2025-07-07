@@ -37,9 +37,11 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          push: true
-          tags: ${{ env.IMAGE_NAME }}:latest
+           context: ./Python_App
+           file: ./Python_App/Dockerfile
+           push: true
+           tags: ${{ env.IMAGE_NAME }}:latest
+
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4
