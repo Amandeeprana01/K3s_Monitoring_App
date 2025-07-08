@@ -55,4 +55,4 @@ jobs:
 
       - name: Deploy to K3s
         run: |
-          kubectl apply -f k8s/
+          kubectl apply -f k3s/
