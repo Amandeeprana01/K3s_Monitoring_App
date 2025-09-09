@@ -51,7 +51,7 @@ jobs:
       - name: Decode and write kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 --decode > $HOME/.kube/config
+          base64 --decode <<< "${{ secrets.KUBE_CONFIG_DATA }}" > $HOME/.kube/config
 
       - name: Deploy to K3ss
         run: |
