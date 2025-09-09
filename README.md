@@ -16,7 +16,6 @@ The setup provides robust observability with dashboards and email alerts, and de
   - **Grafana**: Visualization dashboards
   - **Alertmanager**: Email notifications for alerts
 
-
 -->> 🗂️ **Folder Structure**
 
 Python_proj/
