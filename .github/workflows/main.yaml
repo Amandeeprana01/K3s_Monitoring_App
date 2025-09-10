@@ -1,58 +1,58 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - main
+push:
+branches:
+- main
 
 env:
-  IMAGE_NAME: amandeeprana/my-python-app
+IMAGE_NAME: amandeeprana/my-python-app
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+build_and_deploy:
+runs-on: self-hosted # <--- This line is changed to use your EC2 runner
+steps:
+- name: Checkout code
+uses: actions/checkout@v3
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  - name: Set up Python
+    uses: actions/setup-python@v4
+    with:
+      python-version: '3.10'
 
-      - name: Set up Python
-        uses: actions/setup-python@v4 
-        with:
-          python-version: '3.10'
-          
-      - name: Run tests
-        run: |
-          python -m unittest discover
+  - name: Run tests
+    run: |
+      python -m unittest discover
 
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
+  - name: Set up Docker
+    uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+  - name: Login to Docker Hub
+    uses: docker/login-action@v3
+    with:
+      username: ${{ secrets.DOCKER_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-           context: ./Python_App
-           file: ./Python_App/Dockerfile
-           push: true
-           tags: ${{ secrets.DOCKER_USERNAME }}/my-python-app:${{ github.sha }}
+  - name: Build and push Docker image
+    uses: docker/build-push-action@v5
+    with:
+      context: ./Python_App
+      file: ./Python_App/Dockerfile
+      push: true
+      tags: ${{ secrets.DOCKER_USERNAME }}/my-python-app:${{ github.sha }}
 
 
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v4
-        with:
-          version: 'latest'
+  - name: Setup kubectl
+    uses: azure/setup-kubectl@v4
+    with:
+      version: 'latest'
 
-      - name: Decode and write kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          base64 --decode <<< "${{ secrets.KUBE_CONFIG_DATA }}" > $HOME/.kube/config
+  - name: Decode and write kubeconfig
+    run: |
+      mkdir -p $HOME/.kube
+      base64 --decode <<< "${{ secrets.KUBE_CONFIG_DATA }}" > $HOME/.kube/config
+      chmod 600 $HOME/.kube/config
 
-      - name: Deploy to K3ss
-        run: |
-          kubectl apply -f k3s/
+  - name: Deploy to K3s
+    run: |
+      kubectl apply -f k3s/
