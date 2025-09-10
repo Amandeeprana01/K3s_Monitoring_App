@@ -40,7 +40,7 @@ jobs:
            context: ./Python_App
            file: ./Python_App/Dockerfile
            push: true
-           tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-python-app:${{ github.sha }}
+           tags: ${{ secrets.DOCKER_USERNAME }}/my-python-app:${{ github.sha }}
 
 
       - name: Setup kubectl
