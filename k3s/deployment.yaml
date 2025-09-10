@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: python-app
-        image: amandeeprana/my-python-app:25fff9f
+        image: amandeeprana/my-python-app:1f482bfc4af88ba489cf0eead8946a11a8ea7c1c
         imagePullPolicy: Always  # <-- Use this if local image
         ports:
         - containerPort: 8000
