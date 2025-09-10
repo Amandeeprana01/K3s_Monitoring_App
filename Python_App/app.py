@@ -19,46 +19,202 @@ uptime_gauge = Gauge('python_app_uptime_seconds', 'App uptime seconds', registry
 
 STYLE = """
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+        :root {
+            --bg-color: #f0f4f8;
+            --container-bg: #ffffff;
+            --card-bg: #ffffff;
+            --card-hover-bg: #f5f9ff;
+            --text-color: #333333;
+            --primary-accent: #007bff;
+            --secondary-accent: #28a745;
+            --highlight-color: #e8f3ff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #e0e0e0;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 40px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #f0f0f5;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s;
         }
         .container {
-            background: rgba(255, 255, 255, 0.12);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(31,38,135,0.37);
-            backdrop-filter: blur(8.5px);
-            -webkit-backdrop-filter: blur(8.5px);
-            border: 1px solid rgba(255,255,255,0.18);
-            max-width: 900px;
+            background: var(--container-bg);
+            padding: 30px 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            max-width: 1100px;
             margin: 20px auto;
+            border: 1px solid var(--border-color);
+            transition: box-shadow 0.3s;
         }
-        h1, h2 {
-            color: #ffd86b;
+        h1, h2, h3 {
+            color: var(--primary-accent);
             text-align: center;
-            margin-bottom: 30px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            margin-bottom: 25px;
+            font-weight: 500;
         }
         p {
-            font-size: 17px;
-            line-height: 1.7;
-            color: #e8e8ffcc;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #666666;
         }
         a {
-            color: #81a1ff;
+            color: var(--primary-accent);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
+            transition: color 0.3s;
         }
         a:hover {
+            color: var(--secondary-accent);
             text-decoration: underline;
-            color: #c7d3ff;
+        }
+        .section-nav {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+        .nav-button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 0 10px;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: #fff;
+            background-color: var(--primary-accent);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.2s;
+            cursor: pointer;
+        }
+        .nav-button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+            background-color: var(--card-hover-bg);
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: transform 0.3s;
+        }
+        .card img:hover {
+            transform: scale(1.05);
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .metric-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            text-align: center;
+            border-left: 4px solid var(--primary-accent);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 180px;
+        }
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-accent);
+        }
+        .metric-label {
+            display: block;
+            font-size: 0.9rem;
+            color: #999999;
+            margin-top: 5px;
+        }
+        .progress-circle {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: conic-gradient(
+                var(--primary-accent) 0deg, 
+                var(--primary-accent) 0deg,
+                var(--border-color) 0deg
+            );
+            transition: background 1s ease-in-out;
+            margin-bottom: 10px;
+        }
+        .progress-circle::before {
+            content: '';
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            width: 90px;
+            height: 90px;
+        }
+        .progress-circle .value-text {
+            position: relative;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
         }
     </style>
 """
+
+def get_circle_style(percent, accent_color_low, accent_color_med, accent_color_high):
+    color = accent_color_low
+    if percent > 50:
+        color = accent_color_med
+    if percent > 80:
+        color = accent_color_high
+    return f"""
+        <div class="progress-circle" style="background: conic-gradient(
+            {color} 0deg, 
+            {color} {3.6 * percent}deg,
+            var(--border-color) {3.6 * percent}deg
+        );">
+            <span class="value-text">{percent}%</span>
+        </div>
+    """
 
 class MetricsHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -98,81 +254,60 @@ class MetricsHandler(http.server.SimpleHTTPRequestHandler):
         <!DOCTYPE html>
         <html>
         <head>
-            <title>🚀 Top DevOps Tools</title>
+            <title>🚀 DevOps Hub</title>
             {STYLE}
-            <style>
-                .tool-block {{
-                    overflow: auto;
-                    margin-bottom: 25px;
-                    padding: 10px;
-                    background: rgba(255, 255, 255, 0.08);
-                    border-radius: 10px;
-                }}
-                .tool-block img {{
-                    width: 150px;
-                    float: left;
-                    margin-right: 20px;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-                    background: rgba(255, 255, 255, 0.3);
-                    padding: 5px;
-                }}
-                .label {{
-                    font-weight: 700;
-                    color: #ffeb99;
-                }}
-            </style>
         </head>
         <body>
             <div class="container">
-                <h1><b>Top DevOps Tools & Market Trends</b></h1>
-
-                <div class="tool-block">
-                    <img src="https://www.docker.com/wp-content/uploads/2022/03/vertical-logo-monochromatic.png" alt="Docker Logo">
-                    <h2><b>Docker</b></h2>
-                    <p><span class="label">Description:</span> Simplifies packaging and running applications in isolated containers.</p>
-                    <p><span class="label">Market Share:</span> Used by 70% of global organizations.</p>
+                <h1>DevOps Hub</h1>
+                <div class="card-grid">
+                    <div class="card">
+                        <a href="https://www.docker.com" target="_blank">
+                            <img src="https://www.docker.com/wp-content/uploads/2022/03/vertical-logo-monochromatic.png" alt="Docker Logo">
+                        </a>
+                        <h3>Docker</h3>
+                        <p>Simplifies packaging and running applications in isolated containers.</p>
+                    </div>
+                    <div class="card">
+                        <a href="https://kubernetes.io" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg" alt="Kubernetes Logo">
+                        </a>
+                        <h3>Kubernetes</h3>
+                        <p>Container orchestration platform for scaling and managing containerized apps.</p>
+                    </div>
+                    <div class="card">
+                        <a href="https://www.jenkins.io" target="_blank">
+                            <img src="https://www.jenkins.io/images/logos/jenkins/jenkins.png" alt="Jenkins Logo">
+                        </a>
+                        <h3>Jenkins</h3>
+                        <p>Automates building, testing, and deployment (CI/CD pipelines).</p>
+                    </div>
+                    <div class="card">
+                        <a href="https://prometheus.io" target="_blank">
+                            <img src="https://prometheus.io/_next/static/media/prometheus-logo.7aa022e5.svg" alt="Prometheus Logo">
+                        </a>
+                        <h3>Prometheus</h3>
+                        <p>Time-series monitoring and alerting toolkit for microservices.</p>
+                    </div>
+                    <div class="card">
+                        <a href="https://grafana.com" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a1/Grafana_logo.svg" alt="Grafana Logo">
+                        </a>
+                        <h3>Grafana</h3>
+                        <p>Visualization and analytics platform for interactive dashboards.</p>
+                    </div>
+                    <div class="card">
+                        <a href="https://www.terraform.io" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Terraform_Logo.svg" alt="Terraform Logo">
+                        </a>
+                        <h3>Terraform</h3>
+                        <p>Infrastructure as code tool to provision and manage cloud resources.</p>
+                    </div>
                 </div>
-
-                <div class="tool-block">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/39/Kubernetes_logo_without_workmark.svg" alt="Kubernetes Logo">
-                    <h2><b>Kubernetes</b></h2>
-                    <p><span class="label">Description:</span> Container orchestration platform for scaling and managing containerized apps.</p>
-                    <p><span class="label">Market Share:</span> Adopted by 80% of enterprises worldwide.</p>
+                <div class="section-nav">
+                    <a href="/projects" class="nav-button">Real-World Projects</a>
+                    <a href="/appinfo" class="nav-button">View App Metrics</a>
                 </div>
-
-                <div class="tool-block">
-                    <img src="https://www.jenkins.io/images/logos/jenkins/jenkins.png" alt="Jenkins Logo">
-                    <h2><b>Jenkins</b></h2>
-                    <p><span class="label">Description:</span> Automates building, testing, and deployment (CI/CD pipelines).</p>
-                    <p><span class="label">Market Share:</span> Around 60% adoption for CI/CD pipelines.</p>
-                </div>
-
-                <div class="tool-block">
-                    <img src="https://prometheus.io/_next/static/media/prometheus-logo.7aa022e5.svg" alt="Prometheus Logo">
-                    <h2><b>Prometheus</b></h2>
-                    <p><span class="label">Description:</span> Time-series monitoring and alerting toolkit for microservices.</p>
-                    <p><span class="label">Market Share:</span> Dominant choice for microservices monitoring.</p>
-                </div>
-
-                <div class="tool-block">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a1/Grafana_logo.svg" alt="Grafana Logo">
-                    <h2><b>Grafana</b></h2>
-                    <p><span class="label">Description:</span> Visualization and analytics platform to create interactive dashboards.</p>
-                    <p><span class="label">Market Share:</span> Widely used alongside Prometheus for metrics visualization.</p>
-                </div>
-
-                <div class="tool-block">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Terraform_Logo.svg" alt="Terraform Logo">
-                    <h2><b>Terraform</b></h2>
-                    <p><span class="label">Description:</span> Infrastructure as code tool to provision and manage cloud resources.</p>
-                    <p><span class="label">Market Share:</span> Over 50% of DevOps teams worldwide.</p>
-                </div>
-
-                <p style="text-align:center; margin-top:30px;">
-                    <a href="/projects">See Real-World Projects</a> | 
-                    <a href="/appinfo">View App Metrics</a>
-                </p>
             </div>
         </body>
         </html>
@@ -184,121 +319,118 @@ class MetricsHandler(http.server.SimpleHTTPRequestHandler):
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Company Real-World Projects & Use Cases</title>
+            <title>Companies & Projects</title>
             {STYLE}
-            <style>
-                .block {{
-                    background: rgba(255, 255, 255, 0.08);
-                    padding: 20px;
-                    margin-bottom: 25px;
-                    border-radius: 12px;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-                    text-align: center;
-                    transition: transform 0.3s;
-                }}
-                .block:hover {{
-                    transform: scale(1.02);
-                }}
-                .block img {{
-                    width: 80px;
-                    margin-bottom: 10px;
-                    border-radius: 8px;
-                    background: rgba(255,255,255,0.2);
-                    padding: 5px;
-                }}
-                h3 {{
-                    color: #ffd86b;
-                    margin-top: 10px;
-                }}
-                p {{
-                    color: #e8e8ffcc;
-                }}
-            </style>
         </head>
         <body>
             <div class="container">
-                <h1><b>Company Real-World Projects</b></h1>
-
-                <div class="block">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix">
-                    <h3>Netflix</h3>
-                    <p>Leading in microservices and chaos engineering for global streaming scale.</p>
+                <h1>Real-World DevOps Projects</h1>
+                <div class="card-grid">
+                    <div class="card">
+                        <a href="https://jobs.netflix.com/teams/devops" target="_blank">
+                           <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix">
+                        </a>
+                        <h3>Netflix</h3>
+                        <p>Leading in microservices and chaos engineering for global streaming scale.</p>
+                    </div>
+                    <div class="card">
+                        <a href="https://aws.amazon.com/devops" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon">
+                        </a>
+                        <h3>Amazon</h3>
+                        <p>Deploying code every few seconds, enabling rapid innovation worldwide.</p>
+                    </div>
+                    <div class="card">
+                        <a href="https://www.spotify.com/us/jobs/" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" alt="Spotify">
+                        </a>
+                        <h3>Spotify</h3>
+                        <p>Empowering teams with fast, independent feature releases to millions.</p>
+                    </div>
+                    <div class="card">
+                        <a href="https://www.facebook.com/careers" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Facebook_icon.svg" alt="Facebook">
+                        </a>
+                        <h3>Facebook</h3>
+                        <p>Rolling out new features daily to billions of users with strong CI/CD pipelines.</p>
+                    </div>
+                    <div class="card">
+                        <a href="https://medium.com/airbnb-engineering/tagged/devops" target="_blank">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_Bélo.svg" alt="Airbnb">
+                        </a>
+                        <h3>Airbnb</h3>
+                        <p>Scaling globally using containers and automated deployments for fast delivery.</p>
+                    </div>
                 </div>
-
-                <div class="block">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="Amazon">
-                    <h3>Amazon</h3>
-                    <p>Deploying code every few seconds, enabling rapid innovation worldwide.</p>
+                <div class="section-nav">
+                    <a href="/" class="nav-button">Tools Dashboard</a>
+                    <a href="/appinfo" class="nav-button">View App Metrics</a>
                 </div>
-
-                <div class="block">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" alt="Spotify">
-                    <h3>Spotify</h3>
-                    <p>Empowering squads with fast, independent feature releases to millions.</p>
-                </div>
-
-                <div class="block">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Facebook_icon.svg" alt="Facebook">
-                    <h3>Facebook</h3>
-                    <p>Rolling out new features daily to billions of users with strong CI/CD pipelines.</p>
-                </div>
-
-                <div class="block">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_Bélo.svg" alt="Airbnb">
-                    <h3>Airbnb</h3>
-                    <p>Scaling globally using containers and automated deployments for fast delivery.</p>
-                </div>
-
-                <h1 style="margin-top:50px;"><b>Popular DevOps Project Types</b></h1>
-
-                <div class="block">
-                    <h3>Microservices Migration</h3>
-                    <p>Breaking monoliths into scalable, independent services.</p>
-                </div>
-
-                <div class="block">
-                    <h3>Continuous Deployment</h3>
-                    <p>Automating builds, tests, and releases for faster delivery.</p>
-                </div>
-
-                <div class="block">
-                    <h3>Multi-Cloud Deployments</h3>
-                    <p>Ensuring flexibility and resilience across multiple clouds.</p>
-                </div>
-
-                <p style="text-align:center; margin-top:30px;">
-                    <a href="/">Top Dev Tools</a> | 
-                    <a href="/appinfo">View App Metrics </a>
-                </p>
             </div>
         </body>
         </html>
         """
         self.respond(html_content)
 
+
     def show_app_info(self, cpu, mem, uptime_str, last_req_str, disk, net):
+        # Using a simple color-coded system for the circular charts
+        green = "#2ecc71"
+        yellow = "#f1c40f"
+        red = "#e74c3c"
+        
+        cpu_circle = get_circle_style(cpu, green, yellow, red)
+        mem_circle = get_circle_style(mem, green, yellow, red)
+        disk_circle = get_circle_style(disk.percent, green, yellow, red)
+
         html_content = f"""
         <!DOCTYPE html>
         <html>
         <head>
-            <title>App & System Information</title>
+            <title>App Metrics</title>
             {STYLE}
         </head>
         <body>
             <div class="container">
-                <h1><b>Application & System Metrics</b></h1>
-                <p><span class="label">CPU Usage:</span> {cpu}%</p>
-                <p><span class="label">Memory Usage:</span> {mem}%</p>
-                <p><span class="label">Disk Usage:</span> {disk.percent}% ({disk.used // (1024**3)} GB used of {disk.total // (1024**3)} GB)</p>
-                <p><span class="label">Network Sent:</span> {net.bytes_sent // (1024**2)} MB</p>
-                <p><span class="label">Network Received:</span> {net.bytes_recv // (1024**2)} MB</p>
-                <p><span class="label">App Uptime:</span> {uptime_str}</p>
-                <p><span class="label">Last Request:</span> {last_req_str}</p>
-                <p><span class="label">Request Count:</span> {request_count}</p>
-                <p style="text-align:center; margin-top:30px;">
-                    <a href="/">← Top Tools</a> | 
-                    <a href="/projects">Project Showcase </a>
-                </p>
+                <h1>Application & System Metrics</h1>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        {cpu_circle}
+                        <span class="metric-label">CPU Usage</span>
+                    </div>
+                    <div class="metric-card">
+                        {mem_circle}
+                        <span class="metric-label">Memory Usage</span>
+                    </div>
+                    <div class="metric-card">
+                        {disk_circle}
+                        <span class="metric-label">Disk Usage</span>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">{net.bytes_sent // (1024**2)} MB</div>
+                        <span class="metric-label">Network Sent</span>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">{net.bytes_recv // (1024**2)} MB</div>
+                        <span class="metric-label">Network Received</span>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">{uptime_str}</div>
+                        <span class="metric-label">App Uptime</span>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">{last_req_str}</div>
+                        <span class="metric-label">Last Request</span>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">{request_count}</div>
+                        <span class="metric-label">Total Requests</span>
+                    </div>
+                </div>
+                <div class="section-nav">
+                    <a href="/" class="nav-button">Tools Dashboard</a>
+                    <a href="/projects" class="nav-button">Project Showcase</a>
+                </div>
             </div>
         </body>
         </html>
@@ -322,4 +454,3 @@ if __name__ == "__main__":
     print(f"Starting server at http://localhost:{PORT}")
     with socketserver.TCPServer(("", PORT), MetricsHandler) as httpd:
         httpd.serve_forever()
-
