@@ -254,7 +254,7 @@ class MetricsHandler(http.server.SimpleHTTPRequestHandler):
         <!DOCTYPE html>
         <html>
         <head>
-            <title>🚀 DevOpss Hub</title>
+            <title> DevOps Hub</title>
             {STYLE}
         </head>
         <body>
