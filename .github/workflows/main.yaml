@@ -11,8 +11,9 @@ on:
 jobs:
   build_and_deploy:
     runs-on: self-hosted
-    env:
-      IMAGE_FULL_NAME: ${{ secrets.DOCKER_REGISTRY_URL }}/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+
+    # The static IMAGE_FULL_NAME variable has been removed from here.
+    # We will now create the full image name with a unique tag in the build step.
 
     steps:
       - name: Checkout Repository
@@ -24,13 +25,19 @@ jobs:
       - name: Login to Docker registry
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTRY_URL }} --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - name: Build Docker image
+      - name: Build and Push Docker image
         run: |
-          cd Python_App/  # change this if your Dockerfile is elsewhere
-          docker build . --file Dockerfile --tag "${{ env.IMAGE_FULL_NAME }}"
-
-      - name: Push Docker image
-        run: docker push "${{ env.IMAGE_FULL_NAME }}"
+          # Create a unique image name using the Git commit SHA as the tag.
+          # This ensures that a new image is always seen by Kubernetes.
+          IMAGE_FULL_NAME=${{ secrets.DOCKER_REGISTRY_URL }}/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+          
+          cd Python_App/ # change this if your Dockerfile is elsewhere
+          docker build . --file Dockerfile --tag "$IMAGE_FULL_NAME"
+          docker push "$IMAGE_FULL_NAME"
+          
+          # Store the full image name with the unique tag as an environment variable
+          # for the next step to use.
+          echo "IMAGE_FULL_NAME=$IMAGE_FULL_NAME" >> $GITHUB_ENV
 
       - name: Configure Kubeconfig
         run: |
@@ -39,7 +46,13 @@ jobs:
           chmod 600 $HOME/.kube/config
           sed -i 's|server:.*|server: https://localhost:6443|g' $HOME/.kube/config
 
+      # The kubectl apply command alone is not enough, as it won't force an update
+      # if the file is "unchanged". We will now use a more explicit command.
       - name: Deploy to K3s Cluster
         run: |
           kubectl apply -f k3s/deployment.yaml
+          
+          # Explicitly update image to trigger rollout
+          kubectl set image deployment/python-app python-app=$IMAGE_FULL_NAME
+          
           kubectl apply -f k3s/service.yaml
