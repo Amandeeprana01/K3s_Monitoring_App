@@ -41,5 +41,5 @@ jobs:
 
       - name: Deploy to K3s Cluster
         run: |
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k3s/deployment.yaml
+          kubectl apply -f k3s/service.yaml
