@@ -387,7 +387,7 @@ class MetricsHandler(http.server.SimpleHTTPRequestHandler):
         <!DOCTYPE html>
         <html>
         <head>
-            <title>App Metrics</title>
+            <title>App Metrics Data</title>
             {STYLE}
         </head>
         <body>
